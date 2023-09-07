@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { cwd } from 'process';
 import { program } from 'commander/esm.mjs';
-import readUrl from '../src/page_loader.js';
+import pageloader from '../src/index.js';
 
 program
   .name('page-loader')
@@ -10,9 +10,9 @@ program
   .arguments('<url>')
   .option(
     '-o, --output [dir]',
-    'output dir (default: "/home/user/current-dir")',
+    'output dir',
     process.cwd(),
   )
-  .action((url, dir) => console.log(readUrl(url, dir.output)));
+  .action((url, dir) => console.log(pageloader(url, dir.output)));
 
 program.parse();
