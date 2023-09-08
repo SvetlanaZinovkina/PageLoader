@@ -5,7 +5,11 @@
   "main": "bin/page-loader.js",
   "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "windowsDebug": "@powershell -Command $env:DEBUG='page-loader';page-loader $npm_config_url",
+    "lint": "npx eslint .",
+    "lint-fix": "npx eslint --fix .",
+    "test-coverage": "npm test -- --coverage --coverageProvider=v8"
   },
   "repository": {
     "type": "git",
@@ -21,11 +25,13 @@
     "page-loader": "bin/page-loader.js"
   },
   "dependencies": {
+    "@jest/globals": "^29.6.4",
     "axios": "^1.5.0",
     "axios-debug-log": "^1.0.0",
     "cheerio": "^1.0.0-rc.12",
     "commander": "^10.0.1",
-    "debug": "^4.3.4"
+    "debug": "^4.3.4",
+    "listr": "^0.14.3"
   },
   "devDependencies": {
     "eslint": "^8.43.0",
