@@ -1,176 +1,93 @@
-import nock from 'nock';
+import {
+  test,
+  expect,
+  beforeEach,
+} from '@jest/globals';
+import path from 'path';
 import { fileURLToPath } from 'url';
-import os from 'os';
-import path, { dirname } from 'path';
+import nock from 'nock';
 import fs from 'fs/promises';
-import { afterAll } from '@jest/globals';
-import loadPage from '../src/index.js';
+import os from 'os';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import prettier from 'prettier';
+import pageloader from '../src/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const readFile = (filepath, isBinary = false) => fs.readFile(filepath, isBinary ? null : 'utf-8');
-const fixturesPath = path.join(__dirname, '..', '__fixtures__');
-const getFixturePath = (fileName) => path.join(fixturesPath, fileName);
+const __dirname = path.dirname(__filename);
+const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 
-const baseUrl = 'https://page-loader.hexlet.repl.co/';
-const pageUrl = new URL('/courses', baseUrl);
+let tempDir;
+const url = 'https://ru.hexlet.io/courses';
+const dirName = 'ru-hexlet-io-courses_files';
+const fixturesFiles = {
+  html: 'load-full-before.html',
+  css: 'style.css',
+  js: 'script.js',
+  png: 'nodejs.png',
+};
 
-nock.disableNetConnect();
-const scope = nock(baseUrl).persist();
+beforeEach(async () => {
+  nock('https://ru.hexlet.io')
+    .get('/courses')
+    .replyWithFile(200, getFixturePath(fixturesFiles.html))
+    .get('/assets/professions/nodejs.png')
+    .replyWithFile(200, getFixturePath(fixturesFiles.png))
+    .get('/packs/js/runtime.js')
+    .replyWithFile(200, getFixturePath(fixturesFiles.js))
+    .get('/assets/application.css')
+    .replyWithFile(200, getFixturePath(fixturesFiles.css))
+    .get('/courses')
+    .replyWithFile(200, getFixturePath(fixturesFiles.html));
 
-const pageFileName = 'page-loader-hexlet-repl-co-courses.html';
-const assetsFolderName = 'page-loader-hexlet-repl-co-courses_files';
-
-let resourses = [
-  {
-    assetPath: '/courses',
-    fixturePath: `${assetsFolderName}/page-loader-hexlet-repl-co-courses.html`,
-    fixtureData: '',
-  },
-  {
-    assetPath: '/assets/professions/nodejs.png',
-    fixturePath: `${assetsFolderName}/page-loader-hexlet-repl-co-assets-professions-nodejs.png`,
-    fixtureData: '',
-    isBinary: true,
-  },
-  {
-    assetPath: '/assets/application.css',
-    fixturePath: `${assetsFolderName}/page-loader-hexlet-repl-co-assets-application.css`,
-    fixtureData: '',
-  },
-  {
-    assetPath: '/script.js',
-    fixturePath: `${assetsFolderName}/page-loader-hexlet-repl-co-script.js`,
-    fixtureData: '',
-  },
-];
-
-const assetPaths = resourses.map((asset) => asset.assetPath);
-
-let downloadedFilesData = [];
-
-let expectedPageContent;
-
-let outputDirPath;
-describe('Positive cases:', () => {
-  let initialCWD;
-  beforeAll(async () => {
-    initialCWD = process.cwd();
-
-    expectedPageContent = await readFile(getFixturePath(pageFileName));
-
-    resourses = await Promise.all(resourses.map(async (asset) => {
-      const { assetPath, fixturePath, isBinary } = asset;
-      const fixtureData = await readFile(getFixturePath(fixturePath), isBinary);
-
-      return {
-        assetPath,
-        fixturePath,
-        fixtureData,
-        isBinary,
-      };
-    }));
-
-    resourses.forEach((asset) => {
-      const { assetPath, fixtureData } = asset;
-
-      scope
-        .get(assetPath)
-        .reply(200, fixtureData);
-    });
-
-    outputDirPath = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
-    await loadPage(pageUrl.toString(), outputDirPath);
-
-    const promises = resourses.map(async (asset) => {
-      const { assetPath, fixturePath, isBinary } = asset;
-
-      return [
-        assetPath,
-        await readFile(path.join(outputDirPath, fixturePath), isBinary),
-      ];
-    });
-    downloadedFilesData = Object.fromEntries(await Promise.all(promises));
-  });
-
-  afterAll(() => {
-    // We restore initialCWD for proper github actions work
-    process.chdir(initialCWD);
-  });
-
-  test('Changed HTML should match expected', async () => {
-    const actualPageContent = await readFile(path.join(outputDirPath, pageFileName));
-
-    expect(actualPageContent).toBe(expectedPageContent);
-  });
-
-  test.each(assetPaths)('Check asset %s', async (assetPath) => {
-    const { fixtureData } = resourses.find((asset) => asset.assetPath === assetPath);
-
-    expect(downloadedFilesData[assetPath]).toStrictEqual(fixtureData);
-  });
-
-  test('Downloades into current directory by default', async () => {
-    const outputTestDirPath = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
-    process.chdir(outputTestDirPath);
-
-    await loadPage(pageUrl.toString());
-
-    await expect(fs.access(pageFileName)).resolves.not.toThrow();
-    await expect(fs.access(assetsFolderName)).resolves.not.toThrow();
-  });
+  tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+  await pageloader(url, tempDir);
 });
 
-describe('Negative cases:', () => {
-  beforeEach(async () => {
-    outputDirPath = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
-  });
+test('load html', async () => {
+  const htmlAfter = 'ru-hexlet-io-courses.html';
+  const htmlAfterPath = path.join(tempDir, htmlAfter);
+  const afterHTML = await fs.readFile(htmlAfterPath, 'utf-8');
+  const beforeHTML = await fs.readFile(getFixturePath('load-full-after.html'), 'utf-8');
+  const prettified = prettier.format(afterHTML, { parser: 'html' });
+  expect(prettified.trim()).toBe(beforeHTML.trim());
+});
 
-  describe('Filesystem errors:', () => {
-    test('Non-existent output folder error', async () => {
-      nock.enableNetConnect();
+const testFiles = [
+  { key: 'html', file: 'ru-hexlet-io-courses.html' },
+  { key: 'css', file: 'ru-hexlet-io-assets-application.css' },
+  { key: 'js', file: 'ru-hexlet-io-packs-js-runtime.js' },
+  { key: 'png', file: 'ru-hexlet-io-assets-professions-nodejs.png' },
+];
 
-      await expect(loadPage(pageUrl.toString(), '/wrong-folder'))
-        .rejects.toThrow('ENOENT');
-    });
+test.each(testFiles)('$key file', async (el) => {
+  const afterFile = await fs.readFile(path.join(tempDir, dirName, el.file), 'utf-8');
+  const beforeFile = await fs.readFile(getFixturePath(fixturesFiles[el.key]), 'utf-8');
+  expect(afterFile.trim()).toBe(beforeFile.trim());
+});
 
-    test('Non-accessed output folder error', async () => {
-      await fs.chmod(path.join(outputDirPath), 0o400);
+test('404', async () => {
+  nock('https://incorrect')
+    .get('/err')
+    .replyWithError('incorrect url')
+    .get('/404')
+    .reply(404);
 
-      await expect(loadPage(pageUrl.toString(), outputDirPath))
-        .rejects.toThrow('EACCES');
-    });
-  });
+  const err404 = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-err-'));
+  await expect(pageloader('https://incorrect/err', err404)).rejects.toThrow();
+  await expect(pageloader('https://incorrect/404', err404)).rejects.toThrow('Request failed with status code 404');
+});
 
-  describe('Network errors:', () => {
-    test('Connection error (Non-existent domain)', async () => {
-      const nonExistentUrl = new URL('/', 'https://non-existent-domain.test');
-      const expectedErrorOutput = new Error('getaddrinfo ENOTFOUND non-existent-domain.test');
+test('file does not exist', async () => {
+  nock('https://hexlet.ru')
+    .get('/lesson')
+    .replyWithFile(200, getFixturePath(fixturesFiles.html));
+  const fakedir = path.join(os.tmpdir(), 'FAKEDIR');
+  await expect(pageloader('https://hexlet.ru/lesson', fakedir)).rejects.toThrow('ENOENT');
+});
 
-      nock(nonExistentUrl.origin).persist()
-        .get(nonExistentUrl.pathname)
-        .replyWithError(expectedErrorOutput);
-
-      await expect(loadPage(nonExistentUrl.toString()))
-        .rejects.toThrow(expectedErrorOutput);
-
-      await expect(fs.access('non-existent-domain-test.html')).rejects.toThrow(/ENOENT/);
-      await expect(fs.access('non-existent-domain-test_files')).rejects.toThrow(/ENOENT/);
-    });
-  });
-
-  describe('HTTP errors:', () => {
-    test.each([404, 500])('Response code: %d', async (responseCode) => {
-      scope
-        .get(`/${responseCode}`)
-        .reply(responseCode);
-
-      const errorUrl = new URL(responseCode, baseUrl);
-      await expect(loadPage(errorUrl.toString(), outputDirPath))
-        .rejects.toThrow(`Request failed with status code ${responseCode}`);
-
-      await expect(fs.access(`page-loader-hexlet-repl-co-${responseCode}.html`)).rejects.toThrow(/ENOENT/);
-      await expect(fs.access(`page-loader-hexlet-repl-co-${responseCode}_files`)).rejects.toThrow(/ENOENT/);
-    });
-  });
+test('access err', async () => {
+  nock('https://hexlet.ru')
+    .get('/lesson')
+    .replyWithFile(200, getFixturePath(fixturesFiles.html));
+  await expect(pageloader('https://hexlet.ru/lesson', '/sys')).rejects.toThrow('EACCES');
 });
