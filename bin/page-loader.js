@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import program from 'commander';
+import { cwd } from 'process';
+import { program } from 'commander/esm.mjs';
 import pageloader from '../src/index.js';
 
 program
@@ -9,7 +10,7 @@ program
   .arguments('<url>')
   .option(
     '-o, --output [dir]',
-    `output dir (default: "${process.cwd()}")`,
+    'output dir',
     process.cwd(),
   )
   .action((url, dir) => console.log(pageloader(url, dir.output)));
