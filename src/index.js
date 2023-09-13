@@ -14,7 +14,7 @@ import {
 
 const log = debug('page-loader');
 
-export default (url, outputassetsDirPath = '') => {
+const pageloader = (url, outputassetsDirPath = '') => {
   log(`Page loader has started with url: ${url}, outputassetsDirPath: ${outputassetsDirPath}`);
   const pageUrl = new URL(url);
   const htmlPageFileName = urlToFilename(pageUrl);
@@ -58,3 +58,5 @@ export default (url, outputassetsDirPath = '') => {
     })
     .then(() => htmlPagePath);
 };
+
+export default pageloader;

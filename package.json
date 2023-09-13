@@ -32,7 +32,8 @@
     "commander": "^10.0.1",
     "debug": "^4.3.4",
     "listr": "^0.14.3",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "prettier-format": "^4.0.0"
   },
   "devDependencies": {
     "eslint": "^8.43.0",
