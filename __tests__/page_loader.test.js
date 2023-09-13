@@ -2,6 +2,7 @@ import fsp from 'fs/promises';
 import path from 'path';
 import os from 'os';
 import nock from 'nock';
+import prettier from 'prettier';
 import pageloader from '../src/index.js';
 
 nock.disableNetConnect();
@@ -41,5 +42,9 @@ test('html test', async () => {
     path.join(tempdir, 'ru-hexlet-io-courses.html'),
     'utf-8',
   );
-  expect(dataBody).toEqual(responseAfter);
+
+  const prettifiedResult = await prettier.format(dataBody, { parser: 'html' });
+  const prettifiedAfter = await prettier.format(responseAfter, { parser: 'html' });
+
+  expect(prettifiedResult).toEqual(prettifiedAfter);
 });
