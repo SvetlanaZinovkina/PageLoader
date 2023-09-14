@@ -5,7 +5,7 @@
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/34bf404c3cd351542c6b/test_coverage)](https://codeclimate.com/github/SvetlanaZinovkina/fullstack-javascript-project-4/test_coverage)
 
-[![Actions Status](https://github.com/SvetlanaZinovkina/fullstack-javascript-project-4/workflows/loader-test/badge.svg)](https://github.com/SvetlanaZinovkina/fullstack-javascript-project-4/actions)
+[![Actions Status](https://github.com/SvetlanaZinovkina/fullstack-javascript-project-4/actions/workflows/github-actions.yml/badge.svg)](https://github.com/SvetlanaZinovkina/fullstack-javascript-project-4/actions)
 
 
 [![asciicast](https://asciinema.org/a/607164.svg)](https://asciinema.org/a/607164)
