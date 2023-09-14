@@ -7,5 +7,24 @@
 
 [![Actions Status](https://github.com/SvetlanaZinovkina/fullstack-javascript-project-4/actions/workflows/github-actions.yml/badge.svg)](https://github.com/SvetlanaZinovkina/fullstack-javascript-project-4/actions)
 
+## Installation
+
+To install clone the project in the desired folder
+```sh
+git clone git@github.com:SvetlanaZinovkina/fullstack-javascript-project-4.git
+```
+
+Install
+```sh
+make install
+```
+To use CLI -> link the project in the system
+
+```sh
+make link
+```
+
 
 [![asciicast](https://asciinema.org/a/607164.svg)](https://asciinema.org/a/607164)
+
+[![asciicast](https://asciinema.org/a/607884.svg)](https://asciinema.org/a/607884)
