@@ -11,10 +11,10 @@ test:
 	NODE_OPTIONS=--experimental-vm-modules npx jest
 
 test-coverage:
-	npm test -- --coverage --coverageProvider=v8
-
-coverage:
 	NODE_OPTIONS=--experimental-vm-modules npx jest --coverage
+
+#coverage:
+#	NODE_OPTIONS=--experimental-vm-modules npx jest --coverage
 
 watch:
 	NODE_OPTIONS=--experimental-vm-modules npx jest --watch
