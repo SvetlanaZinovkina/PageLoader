@@ -19,6 +19,5 @@ coverage:
 watch:
 	NODE_OPTIONS=--experimental-vm-modules npx jest --watch
 
-
 nockdebug:
 	DEBUG=nock.* NODE_OPTIONS=--experimental-vm-modules npx jest
