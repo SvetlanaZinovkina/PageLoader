@@ -1,0 +1,19 @@
+name: github-actions
+
+on: push
+jobs:
+  Tests-Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+      - run: make install
+      - run: make test
+      - run: make lint
+      - name: Test & publish code coverage
+        uses: paambaati/codeclimate-action@v3.2.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: make coverage
+          debug: true
