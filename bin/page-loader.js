@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import program from 'commander';
+import { program } from 'commander';
 import pageloader from '../src/index.js';
 
 program
