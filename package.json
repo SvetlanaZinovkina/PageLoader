@@ -1,6 +1,6 @@
 {
   "name": "@hexlet/code",
-  "description": "[![Actions Status](https://github.com/SvetlanaMaksimova/fullstack-javascript-project-4/workflows/hexlet-check/badge.svg)](https://github.com/SvetlanaMaksimova/fullstack-javascript-project-4/actions)",
+  "description": "utility for downloading html pages and resources",
   "version": "1.0.0",
   "main": "src/index.js",
   "type": "module",
