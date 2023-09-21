@@ -32,23 +32,21 @@ export const extractAssets = (data, pageUrl, dirName) => {
   const { origin } = pageUrl;
   const $ = cheerio.load(data);
   const assets = Object.entries(tagsAttributes)
-    .flatMap(([tagName, attribute]) =>
-      $(`${tagName}[${attribute}]`)
-        .toArray() // преобладаетразуем в массив $(`${tagName}[${attribute}]`)
-        .map((element) => {
-          const $element = $(element);
-          const src = $element.attr(attribute);
-          const assetUrl = new URL(src, origin);
-          const name = urlToFilename(assetUrl);
+    .flatMap(([tagName, attribute]) => $(`${tagName}[${attribute}]`)
+      .toArray() // преобразуем в массив данные из html(cheerio)=>($(`${tagName}[${attribute}]`))
+      .map((element) => {
+        const $element = $(element);
+        const src = $element.attr(attribute);
+        const assetUrl = new URL(src, origin);
+        const name = urlToFilename(assetUrl);
 
-          return {
-            $element,
-            assetUrl,
-            attribute,
-            name,
-          };
-        })
-    )
+        return {
+          $element,
+          assetUrl,
+          attribute,
+          name,
+        };
+      }))
     .filter(({ assetUrl }) => assetUrl.origin === origin)
     .map(({
       $element, assetUrl, attribute, name,
