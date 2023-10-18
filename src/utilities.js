@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const changeUrl = (url) => url.replace(/\W+/g, '-').replace(/-+$/, '');
 
-export const urlToFilename = (url) => {
+export const getFilename = (url) => {
   const { pathname, hostname } = url;
   const { ext, dir, name } = path.parse(pathname);
   const filename = changeUrl(`${hostname}/${dir}/${name}`);
@@ -14,7 +14,7 @@ export const urlToFilename = (url) => {
   return `${filename}${fileExtension}`;
 };
 
-export const urlToDirname = (url) => {
+export const getDirname = (url) => {
   const { pathname, hostname } = url;
   const { dir, name } = path.parse(pathname);
   const dirname = changeUrl(`${hostname}/${dir}/${name}`);
@@ -38,7 +38,7 @@ export const extractAssets = (data, pageUrl, dirName) => {
         const $element = $(element);
         const src = $element.attr(attribute);
         const assetUrl = new URL(src, origin);
-        const name = urlToFilename(assetUrl);
+        const name = getFilename(assetUrl);
 
         return {
           $element,

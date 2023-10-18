@@ -5,8 +5,8 @@ import axios from 'axios';
 import 'axios-debug-log';
 import Listr from 'listr';
 import {
-  urlToDirname,
-  urlToFilename,
+  getDirname,
+  getFilename,
   extractAssets,
   writeFile,
   downloadAsset,
@@ -17,9 +17,9 @@ const log = debug('page-loader');
 const pageloader = (url, outputassetsDirPath = '') => {
   log(`Page loader has started with url: ${url}, outputassetsDirPath: ${outputassetsDirPath}`);
   const pageUrl = new URL(url);
-  const htmlPageFileName = urlToFilename(pageUrl);
+  const htmlPageFileName = getFilename(pageUrl);
   const htmlPagePath = path.join(outputassetsDirPath, htmlPageFileName);
-  const assetsDirName = urlToDirname(pageUrl);
+  const assetsDirName = getDirname(pageUrl);
   const assetsDirPath = path.join(outputassetsDirPath, assetsDirName);
 
   return axios.get(url)
