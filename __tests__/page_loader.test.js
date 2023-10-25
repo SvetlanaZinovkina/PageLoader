@@ -75,5 +75,5 @@ test('dir read error', async () => {
   nock('https://ru.hexlet.io')
     .get('/courses')
     .reply(200, await fsp.readFile(getFixturePath('source.html'), 'utf-8'));
-  await expect(pageloader('https://ru.hexlet.io/courses', '/sys')).rejects.toThrow(new Error("ENOENT: no such file or directory, mkdir '/sys/ru-hexlet-io-courses_files'"));
+  await expect(pageloader('https://ru.hexlet.io/courses', '/sys')).rejects.toThrow(new Error("EACCES: permission denied, mkdir '/sys/ru-hexlet-io-courses_files'"));
 });
