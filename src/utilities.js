@@ -70,3 +70,6 @@ export const downloadAsset = (pageUrl, assetPath) => axios
 export const hasDir = (html, assetsDirPath) => fs.access(assetsDirPath)
   .catch(() => fs.mkdir(assetsDirPath))
   .then(() => html);
+
+export const writeAssets = (html, assets, htmlPagePath) => fs.writeFile(htmlPagePath, html)
+  .then(() => assets);

@@ -8,15 +8,12 @@ import {
   getDirname,
   getFilename,
   extractAssets,
-  writeFile,
+  writeAssets,
   downloadAsset,
   hasDir,
 } from './utilities.js';
 
 const log = debug('page-loader');
-
-const writeAssets = (html, assets) => fs.writeFile(htmlPagePath, html)
-  .then(() => assets);
 
 const pageloader = (url, outputassetsDirPath = '') => {
   log(`Page loader has started with url: ${url}, outputassetsDirPath: ${outputassetsDirPath}`);
@@ -40,8 +37,7 @@ const pageloader = (url, outputassetsDirPath = '') => {
     .then(({ html, assets }) => {
       log(`HTML page path: '${htmlPagePath}'`);
 
-      return writeFile(htmlPagePath, html)
-        .then(() => assets);
+      return writeAssets(html, assets, htmlPagePath);
     })
     .then((assets) => {
       const tasks = assets.map(({ assetUrl, name }) => {
