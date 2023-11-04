@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs/promises';
 import debug from 'debug';
 import axios from 'axios';
 import 'axios-debug-log';
