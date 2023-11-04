@@ -10,9 +10,13 @@ import {
   extractAssets,
   writeFile,
   downloadAsset,
+  hasDir,
 } from './utilities.js';
 
 const log = debug('page-loader');
+
+const writeAssets = (html, assets) => fs.writeFile(htmlPagePath, html)
+  .then(() => assets);
 
 const pageloader = (url, outputassetsDirPath = '') => {
   log(`Page loader has started with url: ${url}, outputassetsDirPath: ${outputassetsDirPath}`);
@@ -26,9 +30,7 @@ const pageloader = (url, outputassetsDirPath = '') => {
     .then(({ data: html }) => {
       log(`Assets directory path: '${assetsDirPath}'`);
 
-      return fs.access(assetsDirPath)
-        .catch(() => fs.mkdir(assetsDirPath))
-        .then(() => html);
+      return hasDir(html, assetsDirPath);
     })
     .then((html) => {
       log('Extracting assets...');

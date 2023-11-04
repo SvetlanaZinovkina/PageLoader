@@ -66,3 +66,7 @@ export const writeFile = (filePath, content) => fs.writeFile(filePath, content);
 export const downloadAsset = (pageUrl, assetPath) => axios
   .get(pageUrl, { responseType: 'arraybuffer' })
   .then((response) => writeFile(assetPath, response.data));
+
+export const hasDir = (html, assetsDirPath) => fs.access(assetsDirPath)
+  .catch(() => fs.mkdir(assetsDirPath))
+  .then(() => html);
